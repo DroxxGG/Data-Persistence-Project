@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -29,6 +30,8 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        LoadHighScore();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -85,9 +88,40 @@ public class MainManager : MonoBehaviour
         {
             m_HighScore = m_Points;
             HighScoreName = GetPlayerName.playerName;
+            SaveHighScore();
         }
         HighScoreText.text = $"Best Score: " + m_HighScore + "  Name: " + HighScoreName;
     }
 
+    [System.Serializable]
+    class SaveData
+    {
+        public int SavedHighScore;
+        public string SavedHighScoreName;
+    }
 
+    public void SaveHighScore()
+    {
+        SaveData data = new SaveData();
+        data.SavedHighScore = m_HighScore;
+        data.SavedHighScoreName = HighScoreName;
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+        Debug.Log("HighScore saved");
+    }
+
+    public void LoadHighScore()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            m_HighScore = data.SavedHighScore;
+            HighScoreName = data.SavedHighScoreName;
+        }
+    }
 }

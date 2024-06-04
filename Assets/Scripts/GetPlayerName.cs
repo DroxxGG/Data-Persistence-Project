@@ -12,7 +12,7 @@ public class GetPlayerName : MonoBehaviour
     {
 
         playerName = n;
-        Debug.Log(playerName);
+        Debug.Log("Player name set as: " + playerName);
 
         if (playerName != "")
         {
